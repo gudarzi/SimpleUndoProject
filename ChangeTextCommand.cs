@@ -2,9 +2,9 @@
 {
 	public class ChangeTextCommand : Command
 	{
-		private MyTestObject _myTestObject;
-		private string _oldText;
-		private string _newText;
+		private readonly MyTestObject _myTestObject;
+		private readonly string _oldText;
+		private readonly string _newText;
 
 		public ChangeTextCommand(MyTestObject myTestObject, string newText)
 		{

@@ -6,27 +6,45 @@ namespace SimpleUndoProject.ViewModels
 {
 	public class MainViewModel : INotifyPropertyChanged
 	{
-		private Stack<Command> _undoStack = new Stack<Command>();
-		private Stack<Command> _redoStack = new Stack<Command>();
-
-		private string _text;
+		private Stack<Command> undoStack = new Stack<Command>();
+		private Stack<Command> redoStack = new Stack<Command>();
 
 		private MyTestObject myTestObject;
 
+
 		public MainViewModel()
 		{
-			_text = "Initial Text";
-			myTestObject = new MyTestObject() { Text = _text };
+			text = "Initial Text";
+			myTestObject = new MyTestObject() { Text = text };
 		}
 
+		#region Commands
+		public ICommand ChangeTextCommand
+		{
+			get { return new RelayCommand(ChangeText); }
+		}
+
+		public ICommand UndoCommand
+		{
+			get { return new RelayCommand(Undo, CanUndo); }
+		}
+
+		public ICommand RedoCommand
+		{
+			get { return new RelayCommand(Redo, CanRedo); }
+		}
+		#endregion
+
+		#region Props
+		private string text;
 		public string Text
 		{
-			get { return _text; }
+			get { return text; }
 			set
 			{
-				if (_text != value)
+				if (text != value)
 				{
-					_text = value;
+					text = value;
 					NotifyPropertyChanged(nameof(Text));
 				}
 			}
@@ -44,65 +62,53 @@ namespace SimpleUndoProject.ViewModels
 				}
 			}
 		}
-
-		public ICommand ChangeTextCommand
-		{
-			get { return new RelayCommand(ChangeText); }
-		}
+		#endregion
 
 		private void ChangeText()
 		{
-			Command command = new ChangeTextCommand(myTestObject, _text);
+			Command command = new ChangeTextCommand(myTestObject, text);
 			command.Execute();
-			_undoStack.Push(command);
-			_redoStack.Clear();
+			undoStack.Push(command);
+			redoStack.Clear();
 
 			NotifyPropertyChanged(nameof(MyObjectText));
-		}
-
-		public ICommand UndoCommand
-		{
-			get { return new RelayCommand(Undo, CanUndo); }
 		}
 
 		private bool CanUndo()
 		{
-			return _undoStack.Count > 0;
-		}
-
-		private void Undo()
-		{
-			Command command = _undoStack.Pop();
-			command.Unexecute();
-			_redoStack.Push(command);
-
-			NotifyPropertyChanged(nameof(MyObjectText));
-		}
-
-		public ICommand RedoCommand
-		{
-			get { return new RelayCommand(Redo, CanRedo); }
+			return undoStack.Count > 0;
 		}
 
 		private bool CanRedo()
 		{
-			return _redoStack.Count > 0;
+			return redoStack.Count > 0;
 		}
 
+		private void Undo()
+		{
+			Command command = undoStack.Pop();
+			command.Unexecute();
+			redoStack.Push(command);
+
+			NotifyPropertyChanged(nameof(MyObjectText));
+		}
+		
 		private void Redo()
 		{
-			Command command = _redoStack.Pop();
+			Command command = redoStack.Pop();
 			command.Execute();
-			_undoStack.Push(command);
+			undoStack.Push(command);
 
 			NotifyPropertyChanged(nameof(MyObjectText));
 		}
 
+		#region INPC Implementation
 		public event PropertyChangedEventHandler PropertyChanged;
 		private void NotifyPropertyChanged(string propertyName)
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
+		#endregion
 
 	}
 }
