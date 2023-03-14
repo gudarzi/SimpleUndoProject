@@ -1,0 +1,32 @@
+﻿<Window x:Class="SimpleUndoProject.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewmodels="clr-namespace:SimpleUndoProject.ViewModels"
+        xmlns:local="clr-namespace:SimpleUndoProject"
+        mc:Ignorable="d"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Title="MainWindow" Height="200" Width="400">
+
+    <Window.DataContext>
+        <viewmodels:MainViewModel />
+    </Window.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="{Binding MyObjectText}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBox x:Name="TheTextBox" Grid.Row="1" Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Content="Undo" Command="{Binding UndoCommand}" Margin="5" Padding="5" />
+            <Button Content="Redo" Command="{Binding RedoCommand}" Margin="5" Padding="5" />
+            <Button Content="Change Text" Command="{Binding ChangeTextCommand}" Margin="5" Padding="5" />
+        </StackPanel>
+    </Grid>
+
+</Window>
